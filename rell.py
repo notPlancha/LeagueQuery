@@ -8,8 +8,6 @@ import blitz
 import veigar
 import time
 
-cache = veigar.Veigar()
-
 
 def templateDict():
     return {
@@ -24,14 +22,22 @@ def templateDict():
 
 
 def get(query):
+    cache = query.veigar
     assert type(query) is Pyke
     ret = templateDict()
     interpreted = ""
     if "matches" in query.selection:
         interpreted += query.selection
         for account in query.accounts:
-            if account[0] is accountTypes.name:
-                pass
+            accountObj = None
+            if account[0] in [accountTypes.name]:
+                if query.useCached:
+                    accountObj = cache.getAccount(account[1], [account[0]])
+                    if accountObj is not None:
+                        account = True
+                if account is not True:
+                    accountObj = blitz.Account.get()
+                    ret["requests"] += 1
 
     ret["queryTimestamp"] = time.time()
     ret["query"] = interpreted

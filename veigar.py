@@ -8,16 +8,20 @@ from sqllite3 import ProgrammingError as sqlError
 from sqllite3 import OperationalError as transitionError
 import os
 from enum import Enum, auto
+from blitz import Account
 
 
 class accountTypes(Enum):
     # TODO do the rest and change the name
-    id = auto()
+    sumid = auto()
     name = auto()
+    ppuid = auto()
+    accountId = auto()
 
 
 class Veigar:
     def __init__(self, name="main", path=None):
+        # TODO
         """
         if the path is False it will use ram
 
@@ -32,8 +36,15 @@ class Veigar:
             self.path = path + "\\" + name + ".db"
 
     def executeQuery(query):
+        # TODO
         pass
 
     def getAccount(self, accountIdentifier, acctype):
-        assert type(acctype) is accountTypes
         # TODO
+        # if it doesn't find an account saved it returns null
+        assert type(acctype) is accountTypes
+        return None
+
+    def saveAccount(self, account):
+        # TODO
+        assert type(account) is Account

@@ -8,6 +8,7 @@ and communication with the linker (rell)
 # returns a dict
 
 import rell
+import veigar
 from rell.veigar import accountTypes
 from enum import Enum, auto
 import warnings
@@ -40,6 +41,7 @@ class Pyke:
         self.allismatches = True
         self.useCached = True
         self.cache = True
+        self.veigar = veigar.Veigar()
         if len(kwargs.values()) > 0:
             self.options(kwargs)
 

@@ -1,9 +1,10 @@
 from riotwatcher import ApiError, LolWatcher
 from loguru import logger as log
 import time
+from veigar import accountTypes
 
 # Eventually change to matchesV5 but since the filtering options is basically
-# null, ¯\_(ツ)_/¯
+# none, ¯\_(ツ)_/¯
 
 league_get = LolWatcher("RGAPI-97b317ef-97ae-48ef-8e05-b216ab8ac4a9")
 endpoints = {
@@ -42,8 +43,9 @@ def getKeyFromChampion(championName):
 
 
 class Account:
-    def __init__(self, name, region, account):
+    def __init__(self, region, account):
         assert type(account) is dict
+        # TODO change names to dict only
         self.name = name
         self.region = region
         self.SummonerId = account["id"]
@@ -70,14 +72,25 @@ class Account:
         return matches["matches"]
 
     @staticmethod
-    def get(name, region):
-        assert name is not None and region is not None
+    def get(identifier, acctype, region):
+        assert type(acctype) is accountTypes
+        assert identifier is not None and region is not None
         if region == "euw":
             region = "euw1"
         else:
             region = region
+        if acctype == accountTypes.name:
+            endpoint = endpoints["account"].by_name
+        elif acctype == accountTypes.accountId:
+            endpoint = endpoints["account"].by_account
+        elif acctype == accountTypes.ppuid:
+            endpoint = endpoints["account"].by_puuid
+        elif acctype == accountTypes.sumid:
+            endpoint = endpoints["account"].by_id
+        else:
+            raise ValueError("not an accType")
         try:
-            account = endpoints["account"].by_name(region, name)
+            account = endpoint(region, identifier)
         except ApiError as err:
             raise Exception("error: " + str(err.response.status_code))
         return Account(name, region, account)
