@@ -22,6 +22,7 @@ def templateDict():
 
 
 def get(query):
+    # TODO make the interpreted
     cache = query.veigar
     assert type(query) is Pyke
     ret = templateDict()
@@ -36,9 +37,9 @@ def get(query):
                     if accountObj is not None:
                         account = True
                 if account is not True:
-                    accountObj = blitz.Account.get()
+                    accountObj = blitz.Account.get()  # make something if not found TODO
                     ret["requests"] += 1
-
+            # TODO do filters now
     ret["queryTimestamp"] = time.time()
     ret["query"] = interpreted
     ret["settings"] = Pyke.settings()

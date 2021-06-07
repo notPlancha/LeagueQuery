@@ -2,6 +2,7 @@ from riotwatcher import ApiError, LolWatcher
 from loguru import logger as log
 import time
 from veigar import accountTypes
+from enum import Enum, auto
 
 # Eventually change to matchesV5 but since the filtering options is basically
 # none, ¯\_(ツ)_/¯
@@ -18,6 +19,55 @@ endpoints = {
     "matchlist": league_get.match.matchlist_by_account,
     "match": league_get.match.by_id,
 }
+
+
+class queueTypes(Enum):
+    # http://static.developer.riotgames.com/docs/lol/queues.json
+    HexakillAbyss = 75
+    # Urf = 76
+    OneForAllMirrored = 78
+    UrfAi = 83
+    HexakillTreeline = 98
+    ButchersBridge = 100
+    Nemesis = 310
+    BlackMarket = 313
+    NotDominion = 317
+    AllRandomRift = 325
+    Draft = 400
+    SoloDuo = 420
+    Blind = 430
+    Flex = 440
+    Aram = 450
+    BloodHunt = 600
+    DarkStar = 610
+    Clash = 700
+    AiTreelineBegginer = 820
+    AiIntro = 830
+    AiBegginer = 840
+    AiInter = 850
+    Urf = 900
+    Ascension = 910
+    PoroKing = 920
+    NexusSiege = 940
+    DoomBotsVoting = 950
+    DoomBotsStandart = 960
+    StarGuardianNormal = 980
+    PROJECT = 1000
+    SnowArurf = 1010
+    OneForAll = 1020
+    OdysseyIntro = 1030
+    OdysseyCadet = 1040
+    OdysseyCrewmember = 1050
+    OdysseyCaptain = 1060
+    OdysseyOnslaught = 1070
+    TFT = 1090
+    RankedTFT = 1100
+    TutorialTFT = 1110
+    TestTFT = 1111
+    NexusBlitz = 1300
+    Tutorial1 = 2000
+    Tutorial2 = 2010
+    Tutorial3 = 2030
 
 
 def current_version(region):
@@ -46,7 +96,7 @@ class Account:
     def __init__(self, region, account):
         assert type(account) is dict
         # TODO change names to dict only
-        self.name = name
+        self.name = account["name"]
         self.region = region
         self.SummonerId = account["id"]
         self.AccountId = account["accountId"]
@@ -59,13 +109,53 @@ class Account:
         self,
         start_date=None,
         end_date=None,
+        queueIds=None,
+        index=(0, 0 + 100),
+        champions=None,
     ):
-        if start_date is None:
-            start_date = int(time.time())
+        assert (
+            type(index[0]) is type(index[1]) is int and 0 < index[1] - index[0] <= 100
+        )
+        if champions is not None:
+            if type(champions) is int:
+                champions = [champions]
+            elif type(champions) is string:
+                champions = [getKeyFromChampion(champions)]
+            else:
+                assert type(champions) is list
+                if type(champions[0]) is string:
+                    champions = [getKeyFromChampion(i) for i in champions]
+        if start_date is not None:
+            if type(start_date) is time.struct_time:
+                start_date = int(time.mktime(start_date))
+            elif type(start_date) is float:
+                start_date = int(start_date)
+            else:
+                assert type(start_date) is int
+        if end_date is not None:
+            if type(end_date) is time.struct_time:
+                end_date = int(time.mktime(end_date))
+            elif type(end_date) is float:
+                end_date = int(end_date)
+            else:
+                assert type(end_date) is int
+        assert end_date > start_date
+        if queueIds is not None:
+            if type(queueIds) is queueTypes:
+                queueIds = [queueIds.value]
+            else:
+                assert type(queueIds) is list
+                queueIds = [id.value for id in queueIds]
+
         try:
             matches = endpoints["matchlist"](
                 self.region,
                 self.AccountId,
+                queue=queueIds,
+                begin_time=start_date,
+                end_time=end_date,
+                begin_index=index[0],
+                end_index=index[1],
             )
         except ApiError as err:
             raise Exception("error: " + str(err.response.status_code))
@@ -93,7 +183,7 @@ class Account:
             account = endpoint(region, identifier)
         except ApiError as err:
             raise Exception("error: " + str(err.response.status_code))
-        return Account(name, region, account)
+        return Account(region, account)
 
 
 class Player:

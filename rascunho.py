@@ -3,6 +3,5 @@ class a:
         self.b = 10
 
 
-c = a()
-
-print(type(c) is type(a))
+dic = {}
+print(dic["som"])
