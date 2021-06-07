@@ -25,15 +25,12 @@ apitype = apiKeyType.Personal
 
 
 def execute(query):
+    # here it determines which class should create TODO
     return Pyke(query).execute()
 
 
 class Pyke:
-    def __init__(self, query, **kwargs):
-        # here is the query parser TODO
-        self.selection = ["matches"]  # TODO make options enum
-        self.accounts = [(accountTypes.name, "notPlancha")]
-
+    def __init__(self, **kwargs):
         # default settings
         self.api = apiKey
         self.waitUntilFullRequest = False
@@ -62,3 +59,25 @@ class Pyke:
 
     def getOptions(self):
         return {}
+
+
+class Matches(Pyke):
+    def __init__(self, query, **kwargs):
+        # here is the query parser TODO
+        self.selection = ["matches"]  # TODO make options enum (and change in rell too)
+        self.accounts = [(accountTypes.name, "notPlancha")]
+        self.filters = {"enemies": {"includes": ["pyke"]}}
+        self.response = None
+        super().__init__(**kwargs)
+
+    def execute(self):
+        if self.response is None:
+            self.response = super().execute()
+        # TODO here it will costumise to fit the needs on the selection
+
+    def changeQuery(self, query):
+        # detect if only changed selection, if so call changeSelects
+        self.__init__(query)
+
+    def changeSelects(self, selection):
+        pass  # make it change self.selection without changing the self.respobnse TODO

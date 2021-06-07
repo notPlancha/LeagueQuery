@@ -119,11 +119,11 @@ class Account:
         if champions is not None:
             if type(champions) is int:
                 champions = [champions]
-            elif type(champions) is string:
+            elif type(champions) is str:
                 champions = [getKeyFromChampion(champions)]
             else:
                 assert type(champions) is list
-                if type(champions[0]) is string:
+                if type(champions[0]) is str:
                     champions = [getKeyFromChampion(i) for i in champions]
         if start_date is not None:
             if type(start_date) is time.struct_time:

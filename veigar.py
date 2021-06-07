@@ -39,9 +39,11 @@ class Veigar:
         # TODO
         pass
 
-    def getAccount(self, accountIdentifier, acctype):
+    def getAccount(self, accountIdentifier, acctype, maxTime=864000):
         # TODO
         # if it doesn't find an account saved it returns null
+        # maxTime says that if the saved is older than that then it returns null
+        # if maxTime is none it will always return NoNE
         assert type(acctype) is accountTypes
         return None
 

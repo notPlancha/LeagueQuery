@@ -3,7 +3,7 @@ rell will be the linker between the query(pyke.py)
 and the api(blitz)/scrapper(zoe)
 """
 
-from pyke import Pyke, accountTypes
+from pyke import Pyke, accountTypes, Matches
 import blitz
 import veigar
 import time
@@ -23,12 +23,12 @@ def templateDict():
 
 def get(query):
     # TODO make the interpreted
+    assert isinstance(query, Pyke)
     cache = query.veigar
-    assert type(query) is Pyke
-    ret = templateDict()
-    interpreted = ""
-    if "matches" in query.selection:
-        interpreted += query.selection
+    if isinstance(query, Matches):
+        ret = templateDict()
+        interpreted = ""  # TODO do interpreted later
+        accounts = []
         for account in query.accounts:
             accountObj = None
             if account[0] in [accountTypes.name]:
@@ -39,7 +39,21 @@ def get(query):
                 if account is not True:
                     accountObj = blitz.Account.get()  # make something if not found TODO
                     ret["requests"] += 1
-            # TODO do filters now
-    ret["queryTimestamp"] = time.time()
-    ret["query"] = interpreted
-    ret["settings"] = Pyke.settings()
+                    accounts.append(accountObj)
+                    if query.cache:
+                        cache.saveAccount(accountObj)
+        if "enemies" in query.filters:
+            enemyfilters = query.filters["enemies"]
+            if "includes" in enemyfilters:
+                if type(enemyfilters["includes"]) in [str, int]:
+                    enemyList = [enemyfilters["includes"]]
+                else:
+                    assert enemyfilters["includes"] is list
+                    enemyList = enemyfilters["includes"]
+        ret["queryTimestamp"] = time.time()
+        ret["query"] = interpreted
+        ret["settings"] = Pyke.settings()
+        return ret
+    else:
+        # TODO implement other than matcghes
+        raise NotImplementedError()

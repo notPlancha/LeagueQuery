@@ -5,10 +5,19 @@ if __name__ == "__main__":
         pyke.execute(
             """
     get * from account, account2
-        where enemies.includes.champion.championName("pyke")
+        where enemies includes(champion("pyke"))
     """
         )
     )
+    print(
+        pyke.execute(
+            """
+        get * from account, account2
+            where account1.champion = champion("pyke")
+        """
+        )
+    )
+
     print(
         pyke.execute(
             """
