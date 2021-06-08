@@ -39,6 +39,9 @@ class Pyke:
         self.useCached = True
         self.cache = True
         self.veigar = veigar.Veigar()
+        self.maximizeQuery = (
+            True  # if true it will incriese the filters so it needs less requests later
+        )
         if len(kwargs.values()) > 0:
             self.options(kwargs)
 
@@ -66,7 +69,7 @@ class Matches(Pyke):
         # here is the query parser TODO
         self.selection = ["matches"]  # TODO make options enum (and change in rell too)
         self.accounts = [(accountTypes.name, "notPlancha")]
-        self.filters = {"enemies": {"includes": ["pyke"]}}
+        self.filters = {"includesChampions": {"enemies": ["pyke"]}}
         self.response = None
         super().__init__(**kwargs)
 
