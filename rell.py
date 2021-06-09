@@ -1,6 +1,7 @@
 """
 rell will be the linker between the query(pyke.py)
 and the api(blitz)/scrapper(zoe)
+and the veigar
 """
 
 from pyke import Pyke, accountTypes, Matches
@@ -42,14 +43,30 @@ def get(query):
                     accounts.append(accountObj)
                     if query.cache:
                         cache.saveAccount(accountObj)
-        if "enemies" in query.filters:
-            enemyfilters = query.filters["enemies"]
-            if "includes" in enemyfilters:
-                if type(enemyfilters["includes"]) in [str, int]:
-                    enemyList = [enemyfilters["includes"]]
+        if "includes" in query.filters:
+            includesFilters = query.filters["includes"]
+            if "enemies" in includesFilters:
+                if type(includesFilters["enemies"]) in [str, int]:
+                    includesFilters = [includesFilters["enemies"]]
                 else:
-                    assert enemyfilters["includes"] is list
-                    enemyList = enemyfilters["includes"]
+                    assert includesFilters["enemies"] is list
+                    includesFilters = includesFilters["enemies"]
+        else:
+            includesFilters = None
+        if "date" in query.filters:
+            # Complete this and other filters TODO
+            # for this maybe make a loop? idk
+            # Make multiple dates too TODO
+            dateFilters = query.filters["date"]
+            if "between" in dateFilters:
+                pass
+        else:
+            dateFilters = None
+        if query.maximizeQuery:
+            # extend query's date or smth idk TODO, right now this is the main getter but the maximaze query will be done later
+            pass
+        else:
+            pass
         ret["queryTimestamp"] = time.time()
         ret["query"] = interpreted
         ret["settings"] = Pyke.settings()

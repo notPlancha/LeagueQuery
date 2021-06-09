@@ -158,7 +158,7 @@ class Account:
                 end_index=index[1],
             )
         except ApiError as err:
-            raise Exception("error: " + str(err.response.status_code))
+            raise ApiError("error: " + str(err.response.status_code))
         return matches["matches"]
 
     @staticmethod
