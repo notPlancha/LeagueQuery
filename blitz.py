@@ -6,7 +6,7 @@ from enum import Enum, auto
 
 # Eventually change to matchesV5 but since the filtering options is basically
 # none, ¯\_(ツ)_/¯
-
+# TODO change every type to isintance
 league_get = LolWatcher("RGAPI-97b317ef-97ae-48ef-8e05-b216ab8ac4a9")
 endpoints = {
     "matchv4": league_get.match,
@@ -114,7 +114,7 @@ class Account:
         champions=None,
     ):
         assert (
-            type(index[0]) is type(index[1]) is int and 0 < index[1] - index[0] <= 100
+            all([isinstance(i, int) for i in index]) and 0 < index[1] - index[0] <= 100
         )
         if champions is not None:
             if type(champions) is int:
